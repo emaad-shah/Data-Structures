@@ -1,20 +1,20 @@
 #include "bstree.h"
 
-
+// Constructor
 BSTree::BSTree()
 {
+	// Initialize the BSTree
 	root = NULL;
 }
 
-
-// Deconstructor
+// Delete all nodes from the BSTree
 BSTree::~BSTree()
 {
 	free(root);
 }
 
-// Delete all nodes
-void BSTree::free(Node*& root) 
+// Helper function for the deconstructor
+void BSTree::free(Node*& root)
 {
 	if (root == NULL)
 		return;
@@ -27,9 +27,8 @@ void BSTree::free(Node*& root)
 	}
 }
 
-
 // Insert a node in the tree
-bool BSTree::insert(int data)
+bool BSTree::insert(const int & data)
 {
 	Node* newNode = new Node;
 	newNode->data = data;
@@ -44,7 +43,7 @@ bool BSTree::insert(int data)
 		root = newNode;
 		return true;
 	}
-	
+
 	Node* cur = root;
 	while (true)
 	{
@@ -81,18 +80,19 @@ bool BSTree::insert(int data)
 	return true;
 }
 
-// Count number of leaves
+// Count number of leaves in the BSTree
 int BSTree::countLeaves()
 {
-	return countLeavesHelper(root);
+	return countLeavesHelper(root) - 1;
 }
 
+// Count Leaves Helper function
 int BSTree::countLeavesHelper(Node*& cur)
 {
 	if (cur == NULL)
 		return 0;
 	return countLeavesHelper(cur->left) + 1 +
-	countLeavesHelper(cur->right);
+		countLeavesHelper(cur->right);
 
 }
 
@@ -111,26 +111,63 @@ void BSTree::inOrder(Node *& cur)
 	inOrder(cur->right);
 }
 
-int main(void)
+// Find the least common ancestor between two nodes
+void BSTree::lca(int a, int b)
 {
-	// Create an empty tree
-	BSTree t;
-	// Test Insert
-	t.insert(20);
-	t.insert(4);
-	t.insert(7);
-	t.insert(31);
-	t.insert(5);
-	t.print();
+	int n = 0;
+	if (b < a)
+	{
+		// Swap
+		a = a + b;
+		b = a - b;
+		a = a - b;
+	}
 
-	cout << "Number of leaves: " << t.countLeaves() << endl;
-	// Detect memory  leak
-	//_CrtDumpMemoryLeaks();
-	//_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-	//_CrtSetBreakAlloc(141);
-	system("pause");
-	return 0;
+	// Call LCA Helper Function
+	lcaHelper(root, a, b, n);
+	cout << "Least common ancestor of " << a << " and " << b << ": ";
+	cout << n << endl;
 }
- 
 
+// Helper function to find the least common ancestor
+void BSTree::lcaHelper(Node*& cur, const int & a, const int & b, int &n)
+{
+	if (cur == NULL)
+		return;
+	else
+	{
+		if (a < cur->data && b < cur->data)
+			lcaHelper(cur->left, a, b, n);
+		else if (a > cur->data && b > cur->data)
+			lcaHelper(cur->right, a, b, n);
+		else if (a == cur->data && cur->right != NULL && b == cur->right->data)
+				n = a;
+		else if (b == cur->data && cur->left != NULL && a == cur->left->data)
+				n = b;
+		else if (a < cur->data && b > cur->data)
+		{
+			bool getA = retrieve(cur->left, a);
+			bool getB = retrieve(cur->right, b);
+			if (getA && getB)
+				n = cur->data;
+			lcaHelper(cur->left, a, b, n);
+			lcaHelper(cur->right, a, b, n);
+		}
+	}
+}
 
+// Check if data exists in the BSTree
+bool BSTree::retrieve(Node*& cur, const int & n)
+{
+	if (cur == NULL)
+		return false;
+	else
+	{
+		if (n == cur->data)
+			return true;
+		else if (n < cur->data)
+			retrieve(cur->left, n);
+		else if (n > cur->data)
+			retrieve(cur->right, n);
+	}
+}
