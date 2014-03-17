@@ -1,6 +1,6 @@
 //------------------------------------------------------------
 // Copyright: Syed Shah 2014
-// MinHeap:   Insert, Delete 
+// MinHeap:   Insert Min, Delete Min, Find Min  
 //------------------------------------------------------------
 
 #ifndef MINHEAP_H
