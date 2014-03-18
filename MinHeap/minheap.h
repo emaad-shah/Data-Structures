@@ -6,7 +6,6 @@
 #ifndef MINHEAP_H
 #define MINHEAP_H
 #include <iostream>
-#include <string>
 #include <bitset>
 
 using namespace std;
